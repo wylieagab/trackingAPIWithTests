@@ -2892,6 +2892,7 @@
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
           "Microsoft.EntityFrameworkCore.SqlServer": "7.0.0",
+          "Newtonsoft.Json": "9.0.1",
           "Swashbuckle.AspNetCore": "6.2.3"
         },
         "compile": {

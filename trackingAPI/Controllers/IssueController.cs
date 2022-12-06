@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using trackingAPI.Data.Contexts;
 using trackingAPI.Models;
+using trackingAPI.MiddleWare.Decorators;
 
 namespace trackingAPI.Controllers
 {
@@ -17,6 +18,7 @@ namespace trackingAPI.Controllers
         }
 
         [HttpGet]
+        [LimitRequest(MaxRequests = 2, TimeWindow = 5)]
         public async Task<IEnumerable<Issue>> Get()
         {
             return await _context.Issues.ToListAsync();
@@ -25,6 +27,7 @@ namespace trackingAPI.Controllers
         [HttpGet("{id}")] //Id param in url bound to id param in method
         [ProducesResponseType(typeof(Issue), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [LimitRequest(MaxRequests = 2, TimeWindow = 5)]
         public async Task<IActionResult> GetById(int id)
         {
             var issue = await _context.Issues.FindAsync(id);
@@ -34,6 +37,7 @@ namespace trackingAPI.Controllers
         [HttpPost] //issue found in the body of the request
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [LimitRequest(MaxRequests = 2, TimeWindow = 5)]
         public async Task<IActionResult> Create(Issue issue)
         {
             try
@@ -53,18 +57,19 @@ namespace trackingAPI.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [LimitRequest(MaxRequests = 2, TimeWindow = 5)]
         public async Task<IActionResult> Update(int id, Issue issue)
         {
             if (id != issue.Id) return BadRequest();
 
             try
             {
-                _context.Entry(issue).State = EntityState.Modified;
+                _context.Issues.Entry(issue).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
             catch(Exception ex)
             {
-                _context.Entry(issue).State = EntityState.Unchanged;
+                _context.Issues.Entry(issue).State = EntityState.Unchanged;
                 return BadRequest();
             }
 
@@ -74,6 +79,7 @@ namespace trackingAPI.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [LimitRequest(MaxRequests = 2, TimeWindow = 5)]
         public async Task<IActionResult> Delete(int id)
         {
             var issueToDelete = await _context.Issues.FindAsync(id);

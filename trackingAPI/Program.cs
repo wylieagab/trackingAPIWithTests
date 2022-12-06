@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using trackingAPI.Data.Contexts;
+using trackingAPI.MiddleWare.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<IssueDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+builder.Services.AddDistributedMemoryCache();
 
 var app = builder.Build();
 
@@ -26,5 +28,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//Add Custom Middleware
+app.UseRateLimiting();
 
 app.Run();
